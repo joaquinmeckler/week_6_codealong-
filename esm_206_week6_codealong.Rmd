@@ -1,0 +1,101 @@
+---
+title: "Week 6 code along"
+author: "Joaquin Meckler"
+date: "11/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+library(ggpubr)
+library(broom)
+```
+
+```{r}
+set.seed(1414)
+gp_1 <- sample.int(20, size = 15, replace = TRUE)
+
+set.seed(1424)
+gp_2 <- sample.int(30, size = 15, replace = TRUE)
+```
+
+```{r}
+hist(gp_1)
+```
+```{r}
+hist(gp_2)
+```
+```{r}
+my_mwu <- wilcox.test(gp_1, gp_2)
+
+```
+
+
+
+```{r}
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+```
+
+
+
+```{r}
+penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+
+# Return the complete overview:
+summary(penguin_lm)
+```
+```{r}
+penguin_lm_tidy <- broom::tidy(penguin_lm)
+
+```
+
+
+```{r}
+penguin_int <- penguin_lm_tidy$estimate[1]
+penguin_int
+```
+
+```{r}
+penguin_coef <- penguin_lm_tidy$estimate[2]
+penguin_coef
+```
+
+
+```{r}
+## Simple linear regression was used to explore the relationship between penguin flipper length (mm) and body mass (g) across all three penguin species, and including both male and female penguins. A significant regression model was found (β = 49.686, F(1,340) = 1070.7, p < 0.001) with an R2 of 0.759.”
+##"Simple linear regression was used to explore the relationship between penguin flipper length (mm) and body mass (g) across all three penguin species, and including both male and female penguins. A significant regression model was found ($\beta$ = `r round(penguin_coef,3)`, F(`r penguin_lm_out$df`,`r penguin_lm_out$df.residual`) = `r round(penguin_lm_out$statistic,1)`, p < 0.001) with an R^2^ of `r round(penguin_lm_out$r.squared,3)`."
+
+mean_mpg=4
+```
+the mean value is `r mean_mpg`
+round will round function to X decibel places: `r round(mean_mpg, 2)`
+
+```{r}
+plot(penguin_lm)
+
+```
+
+```{r}
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm",
+              color = "red",
+              size = 0.5,
+              fill = "gray10",
+              alpha = 0.5) +
+  theme_light() +
+  ggpubr::stat_regline_equation(label.x = 180, label.y = 5700)
+```
+
+
+```{r}
+penguins_cor <- cor.test(penguins$flipper_length_mm, penguins$body_mass_g)
+
+```
+
